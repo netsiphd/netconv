@@ -7,8 +7,16 @@ Convert GraphData to texts.
 """
 
 
-def encode_edgelist(graph, delimiter=' ', attr=False):
+def encode_edgelist(graph, delimiter=' ', attr=False, header=False):
     text = ''
+
+    if header:
+        text += delimiter.join([str(a) for a in graph.edge_attr[:2]])
+        if attr:
+            text += delimiter
+            text += delimiter.join([str(a) for a in graph.edge_attr[2:]])
+        text += '\n'
+
     for ((node1, node2), *attrs) in graph.edges:
         text += '{}{}{}'.format(
             graph.nodes[node1][0], delimiter, graph.nodes[node2][0])
