@@ -1,3 +1,3 @@
-from graph import GraphData
+from .graph import GraphData
 
 __all__ = ['GraphData']
