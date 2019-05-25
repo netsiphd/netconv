@@ -2,23 +2,34 @@
 decoders.py
 -----------
 
-Convert GraphData to multiple formats.
+Convert texts to GraphData.
 
 """
 
-def decode_edgelist(graph, out, delimiter=' ', data=False, close=True, return_text=False, write=False):
-    text = ''
-    for ((node1, node2), *attrs) in graph.edges:
-        text += '{}{}{}'.format(
-            graph.nodes[node1][0], delimiter, graph.nodes[node2][0])
-        if data:
-            text += delimiter + delimiter.join([str(d) for d in attrs])
-        text += '\n'
-    return text
+
+from .graph import GraphData
 
 
-def write(text, out, close=True):
-    file = open(out) if isinstance(out, str) else out
-    file.write(text)
-    if close:
-        file.close()
+def decode_edgelist(text, delimiter=' '):
+    """Return a GraphData object converted from a text of edgelist."""
+    g = GraphData()
+    n_counter = 0
+    label2id = dict()
+
+    for line in text.strip().split('\n'):
+        nodes = line.strip().split(sep=delimiter)
+
+        # Add nodes
+        for n in nodes:
+            if n not in label2id:
+                label2id[n] = n_counter
+                n_counter += 1
+                g.nodes.append((n,))
+
+        # Add the edge
+        e = (tuple(label2id[n] for n in nodes),)
+        g.edges.append(e)
+
+    return g
+
+
