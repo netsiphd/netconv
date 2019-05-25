@@ -13,7 +13,6 @@ from netconv import decode
 def test_edgelist(delimiter=' '):
     """Test the decoders.decode_edgelist function."""
     # Create test data
-    el = [('a', 'b'), ('b', 'c'), ('c', 'a')]
     data = 'a b\nb c\nc a\n'
 
     # Obtain data repr
@@ -21,7 +20,7 @@ def test_edgelist(delimiter=' '):
     data_repr += repr(['label']) + '\n'
     data_repr += repr([('a',), ('b',), ('c',)]) + '\n'
     data_repr += repr(['edge']) + '\n'
-    data_repr += repr([(e,) for e in el])
+    data_repr += repr([((0, 1),), ((1, 2),), ((2, 0),)])
 
     # Read from the data
     graph = decode(data, 'edgelist', delimiter)
