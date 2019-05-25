@@ -8,8 +8,17 @@ Convert texts to GraphData.
 
 
 from .graph import GraphData
-from io import StringIO
-import lxml
+from io import BytesIO
+import lxml.etree as ET
+
+def parse(s):
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        try:
+            return float(s)
+        except (ValueError, TypeError):
+            return s
 
 
 def decode_edgelist(text, delimiter=' '):
@@ -40,9 +49,9 @@ def decode_graphml(text):
     Return a GraphData object parsed from `text`.
     """
 
-    # iterparse expects a file, not a string
-    it = ET.iterparse(StringIO(text))
+    G = GraphData()
 
+    it = ET.iterparse(BytesIO(str.encode(text)))
     # strip the XML namespace to simplify things
     for _, el in it:
         if '}' in el.tag:
