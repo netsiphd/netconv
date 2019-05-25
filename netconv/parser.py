@@ -1,7 +1,7 @@
 """Parser function to convert graph data file to GraphData object."""
 
 
-from graph import GraphData
+from netconv import GraphData
 
 
 def from_edgelist(filename, delimiter=' '):

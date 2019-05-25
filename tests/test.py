@@ -1,7 +1,7 @@
 """Test the GraphData class."""
 
 
-from graphdata import GraphData
+from netconv.parser import from_edgelist
 
 
 def test_from_edgelist(delimiter=' '):
@@ -20,7 +20,7 @@ def test_from_edgelist(delimiter=' '):
     print()
 
     # Read from the data
-    gd = GraphData.from_edgelist(filename, delimiter)
+    gd = from_edgelist(filename, delimiter)
 
     # Output members in GraphData
     print('GraphData object')
