@@ -7,7 +7,7 @@ Authors:  Chia-Hung Yang <yang.chi@husky.neu.edu>
           Stefan McCabe <mccabe.s@husky.neu.edu>
           Jean-Gabriel Young <jgyou@umich.edu>
 """
-from .graph import GraphData
+from .graph import GraphData, read, decode, encode ,write
 
 
 __all__ = ['GraphData']
