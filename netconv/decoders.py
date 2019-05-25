@@ -7,7 +7,7 @@ Convert texts to GraphData.
 """
 
 
-from netconv import GraphData
+from .graph import GraphData
 
 
 def decode_edgelist(text, delimiter=' '):
