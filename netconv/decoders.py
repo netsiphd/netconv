@@ -6,7 +6,6 @@ Convert texts to GraphData.
 
 """
 
-
 from .graph import GraphData
 from io import BytesIO
 import lxml.etree as ET
