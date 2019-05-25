@@ -7,19 +7,27 @@ Convert texts to GraphData.
 """
 
 
-def decode_edgelist(graph, delimiter=' ', attr=False):
-    text = ''
-    for ((node1, node2), *attrs) in graph.edges:
-        text += '{}{}{}'.format(
-            graph.nodes[node1][0], delimiter, graph.nodes[node2][0])
-        if attr:
-            text += delimiter + delimiter.join([str(d) for d in attrs])
-        text += '\n'
-    return text
+from netconv import GraphData
 
 
-def write(text, out, close=True):
-    file = open(out) if isinstance(out, str) else out
-    file.write(text)
-    if close:
-        file.close()
+def decode_edgelist(text, delimiter=' '):
+    """Return a GraphData object converted from a text of edgelist."""
+    graph = GraphData()
+    n_counter = 0
+    label2id = dict()
+
+    for line in text.strip.split('\n'):
+        nodes = line.strip().split(sep=delimiter)
+
+        # Add nodes
+        for n in nodes:
+            if n not in label2id:
+                label2id[n] = n_counter
+                n_counter += 1
+                graph.nodes.append(n)
+
+        # Add the edge
+        e = (tuple(label2id[n] for n in nodes),)
+        graph.edges.append(e)
+
+    return graph
