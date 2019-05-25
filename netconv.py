@@ -9,10 +9,24 @@ Authors:  Chia-Hung Yang <yang.chi@husky.neu.edu>
 """
 import netconv
 
-format_dict = {"graphml": {'graphml'},
-               "sparse6": {'s6', 'g6'},
-               "gexf": {'gexf'}}
-formats = ['graphml', 'edgelist']
+format_dict = {"graphml":
+                    {"ext": {'graphml'},
+                     "ext_aliases": {'graphml'},
+                     "decoder": None},
+               "sparse6":
+                    {"ext": {'s6'},
+                     "ext_aliases": {'s6', 'g6'},
+                     "decoder": None},
+               "gexf":
+                    {"ext": {'gexf'},
+                     "ext_aliases": {'gexf'},
+                     "decoder": None},
+               "edgelist":
+                    {"ext": {'edgelist'},
+                     "ext_aliases": {'el', 'edgelist', "edges"},
+                     "decoder": netconv.decode_edgelist,
+                     "encoder": netconv.encode_edgelist}}
+
 
 if __name__ == '__main__':
     # Compatibility checks
@@ -37,6 +51,9 @@ if __name__ == '__main__':
                      choices=list(format_dict.keys()),
                      help='Output graph format. Guessed from extension \
                            if not given as input.')
+    prs.add_argument("--sep", '-s',
+                     type=str, default=" ",
+                     help='Separator.')
     prs.add_argument('input', type=str,
                      help='Input file.')
     prs.add_argument('--output', '-o', type=str, default=None,
@@ -54,15 +71,15 @@ if __name__ == '__main__':
     # extension matching
     if args.from_ is None:
         ext = path.splitext(args.input)[1][1:]
-        for ext_name, ext_aliases in format_dict.items():
-            if ext in ext_aliases:
-                args.from_ = ext_name
+        for format_name, format_spec in format_dict.items():
+            if ext in format_spec['ext_aliases']:
+                args.from_ = format_name
 
     if args.to_ is None and args.output is not None:
         ext = path.splitext(args.output)[1][1:]
-        for ext_name, ext_aliases in format_dict.items():
-            if ext in ext_aliases:
-                args.to_ = ext_name
+        for format_name, format_spec in format_dict.items():
+            if ext in format_spec['ext_aliases']:
+                args.to_ = format_name
 
     # Checks on arguments
     if args.from_ is None:
@@ -73,8 +90,16 @@ if __name__ == '__main__':
         print("Output format unspecified.")
         exit()
 
-
     print("Converting form", args.from_, 'to', args.to_)
+
+    # Decode
+    with open(args.input, 'r') as f:
+        g = format_dict[args.from_]['decoder'](f.read(), delimiter=args.sep)
+
+    # Encode
+    if args.output is None:
+        # stdout
+        print(format_dict[args.to_]['encoder'](g, delimiter=args.sep, attr=False))
 
     # graph = netconv.decode(args.from,a )
     # Output
