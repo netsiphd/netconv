@@ -8,11 +8,12 @@ Authors:  Chia-Hung Yang <yang.chi@husky.neu.edu>
           Jean-Gabriel Young <jgyou@umich.edu>
 """
 from .graph import GraphData
-from .decoders import decode_edgelist
+from .decoders import decode_edgelist, decode_graphml
 from .encoders import encode_edgelist
 
 
-DECODERS = {'edgelist': decode_edgelist}
+DECODERS = {'edgelist': decode_edgelist,
+            'graphml': decode_graphml}
 ENCODERS = {'edgelist': encode_edgelist}
 
 
