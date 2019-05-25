@@ -13,7 +13,7 @@ class GraphData():
     def __init__(self):
         self.node_attr = ['label']
         self.nodes = []
-        self.edge_attr = ['edge']
+        self.edge_attr = ['node1', 'node2']
         self.edges = []
         self.graph_attr = {}
         self._node_id = 0

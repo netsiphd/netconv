@@ -6,7 +6,6 @@ Convert texts to GraphData.
 
 """
 
-
 from .graph import GraphData
 
 
@@ -31,5 +30,3 @@ def decode_edgelist(text, delimiter=' '):
         g.edges.append(e)
 
     return g
-
-

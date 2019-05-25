@@ -19,7 +19,7 @@ def test_edgelist(delimiter=' '):
     data_repr = repr({}) + '\n'
     data_repr += repr(['label']) + '\n'
     data_repr += repr([('a',), ('b',), ('c',)]) + '\n'
-    data_repr += repr(['edge']) + '\n'
+    data_repr += repr(['node1', 'node2']) + '\n'
     data_repr += repr([((0, 1),), ((1, 2),), ((2, 0),)])
 
     # Read from the data
