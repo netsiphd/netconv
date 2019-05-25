@@ -7,12 +7,13 @@ Class that all formats get converted to and from.
 """
 
 from .encoders import encode_edgelist
+from .decoders import decode_edgelist
 
 class GraphData():
     """Class that all formats get converted to and from."""
 
     encoders = {'edgelist': encode_edgelist}
-    decoders = {}
+    decoders = {'edgelist': decode_edgelist}
 
     def __init__(self):
         self.node_attr = ['label']
