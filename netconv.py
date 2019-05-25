@@ -11,21 +11,16 @@ import netconv
 
 format_dict = {"graphml":
                     {"ext": {'graphml'},
-                     "ext_aliases": {'graphml'},
-                     "decoder": None},
+                     "ext_aliases": {'graphml'}},
                "sparse6":
                     {"ext": {'s6'},
-                     "ext_aliases": {'s6', 'g6'},
-                     "decoder": None},
+                     "ext_aliases": {'s6', 'g6'}},
                "gexf":
                     {"ext": {'gexf'},
-                     "ext_aliases": {'gexf'},
-                     "decoder": None},
+                     "ext_aliases": {'gexf'}},
                "edgelist":
                     {"ext": {'edgelist'},
-                     "ext_aliases": {'el', 'edgelist', "edges"},
-                     "decoder": netconv.decode_edgelist,
-                     "encoder": netconv.encode_edgelist}}
+                     "ext_aliases": {'el', 'edgelist', "edges"}}}
 
 
 if __name__ == '__main__':
@@ -93,13 +88,21 @@ if __name__ == '__main__':
     print("Converting form", args.from_, 'to', args.to_)
 
     # Decode
-    with open(args.input, 'r') as f:
-        g = format_dict[args.from_]['decoder'](f.read(), delimiter=args.sep)
+    # with open(args.input, 'r') as f:
+    g = netconv.read(args.input, args.from_)
+
+
+    #     def read(filename, fmt, *args, **kwargs):
+    # with open(filename) as file:
+    #     text = file.read()
+    # return decode(text, fmt, *args, **kwargs)
+
+
+    #     format_dict[args.from_]['decoder'](f.read(), delimiter=args.sep)
 
     # Encode
     if args.output is None:
         # stdout
-        print(format_dict[args.to_]['encoder'](g, delimiter=args.sep, attr=False))
+        netconv.write(g, args.to_, sys.stdout)
+        # print(format_dict[args.to_]['encoder'](g, delimiter=args.sep, attr=False))
 
-    # graph = netconv.decode(args.from,a )
-    # Output
