@@ -9,12 +9,13 @@ Authors:  Chia-Hung Yang <yang.chi@husky.neu.edu>
 """
 from .graph import GraphData
 from .decoders import decode_edgelist, decode_graphml
-from .encoders import encode_edgelist
+from .encoders import encode_edgelist, encode_graphml
 
 
 DECODERS = {'edgelist': decode_edgelist,
             'graphml': decode_graphml}
-ENCODERS = {'edgelist': encode_edgelist}
+ENCODERS = {'edgelist': encode_edgelist,
+            'graphml': encode_graphml}
 
 
 def decode(text, fmt, *args, **kwargs):
