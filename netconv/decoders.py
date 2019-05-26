@@ -128,3 +128,48 @@ def decode_graphml(text):
     G.edge_attr = edge_attrs
 
     return G
+
+
+def decode_gexf(text):
+    """Return a GraphData object converted from the text of a GEXF file."""
+    graphdata = GraphData()
+    tree = ET.fromstring(text)
+    gexf = tree.find('gexf')
+
+    # Obtain the graph attributes
+    meta = gexf.find('meta')
+    for key, value in meta.items():
+        graphdata.graph_attr[key] = value
+    for elem in meta.iter():
+        if elem.tag != 'meta':
+            graphdata.graph_attr[elem.tag] = elem.text
+
+    # Obtain directionality of the graph
+    graph = gexf.find('graph')
+    directionality = graph.get('defaultedgetype')
+    if directionality == 'directed':
+        graphdata.graph_attr['directed'] = True
+    elif directionality == 'undirected':
+        graphdata.graph_attr['directed'] = False
+    else:
+        graphdata.graph_attr['directed'] = False  # Default to undirected
+    # TODO: in theory, individual edges can disobey edgedefault,
+    # so we should check the directedness of all edges. However,
+    # it is unlikely that many GraphML objects disobey edgedefault
+    # in this way.
+
+    # Obtain names of node and edge attributes
+    node_attr, edge_attr = ['label'], ['edge']
+    node_attr_id2pos, edge_attr_id2pos = dict(), dict()
+    node_attr_id2def, edge_attr_id2def = dict(), dict()
+    for attrs in graph.findall('attrubutes'):
+        is_node_attr = attrs['class'] == 'node'
+        attr_names = node_attr if is_node_attr else edge_attr
+        id2pos = node_attr_id2pos if is_node_attr else edge_attr_id2pos
+        id2default = node_attr_id2def if is_node_attr else edge_attr_id2def
+        for attr in attrs.iter('attrubute'):
+            attr_names.append(attr['title'])
+            id2pos[attr.id] = attr.id + 1  # The 1st attr. is 'label' or 'edge'
+            id2default[attr.id] = attr.get('default')
+
+    return graphdata
