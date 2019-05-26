@@ -20,25 +20,27 @@ def parse(s):
             return s
 
 
-def decode_edgelist(text, delimiter=' '):
+def decode_edgelist(text, delimiter=' ', attr=False, header=False):
     """Return a GraphData object converted from a text of edgelist."""
     g = GraphData()
     n_counter = 0
     label2id = dict()
 
     for line in text.strip().split('\n'):
-        nodes = line.strip().split(sep=delimiter)
+        node1, node2, *attrs = line.strip().split(sep=delimiter)
 
         # Add nodes
-        for n in nodes:
+        for n in [node1, node2]:
             if n not in label2id:
                 label2id[n] = n_counter
                 n_counter += 1
                 g.nodes.append((n,))
 
         # Add the edge
-        e = (tuple(label2id[n] for n in nodes),)
-        g.edges.append(e)
+        edge = [(label2id[node1], label2id[node2])]
+        if attr:
+            edge += attrs
+        g.edges.append(tuple(edge))
 
     return g
 
@@ -47,7 +49,6 @@ def decode_graphml(text):
     """
     Return a GraphData object parsed from `text`.
     """
-
     G = GraphData()
 
     it = ET.iterparse(BytesIO(str.encode(text)))
