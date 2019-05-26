@@ -38,7 +38,7 @@ def test_graphml():
     data_repr += repr(['label']) + '\n'
     data_repr += repr([('a',), ('b',), ('c',)]) + '\n'
     data_repr += repr(['edge']) + '\n'
-    data_repr += repr([((0, 1),), ((1, 2),), ((2, 0),)])
+    data_repr += repr([((0, 1),), ((0, 2),), ((1, 2),)])
 
     # Decode the data text
     graph = decode(data_text, 'graphml')
