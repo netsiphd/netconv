@@ -105,4 +105,6 @@ if __name__ == '__main__':
         # stdout
         netconv.write(g, args.to_, sys.stdout)
         # print(format_dict[args.to_]['encoder'](g, delimiter=args.sep, attr=False))
+    elif args.output:
+        netconv.write(g, args.to_, args.output)
 
