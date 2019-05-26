@@ -22,6 +22,13 @@ def test_edgelist_no_attr():
                           'edgelist', attr=False)
 
 def test_graphml():
-    with open('../data/karate.gml') as file:
+    with open('../data/karate.graphml') as file:
         text = file.read()
-    assert text == encode(decode(text, 'graphml'), 'graphml')
+    G = decode(text, 'graphml')
+    new_text = encode(G, 'graphml')
+    H = decode(text, 'graphml')
+    assert G.nodes == H.nodes
+    assert G.edges == H.edges
+    assert G.graph_attr == H.graph_attr
+    assert G.edge_attr == H.edge_attr
+    assert G.node_attr == G.node_attr
