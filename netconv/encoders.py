@@ -72,6 +72,7 @@ def encode_graphml(graph):
     text += '</graph>\n'
     text += '</graphml>\n'
 
+    text = text.replace('&', '&amp;')
     return text
 
 
