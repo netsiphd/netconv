@@ -9,6 +9,8 @@ Convert texts to GraphData.
 from .graph import GraphData
 from io import BytesIO
 import lxml.etree as ET
+from copy import copy
+
 
 def parse(s):
     try:
@@ -160,16 +162,59 @@ def decode_gexf(text):
 
     # Obtain names of node and edge attributes
     node_attr, edge_attr = ['label'], ['edge']
+    # Handle labeled names of nodes and edges plus weights for edges
+    nodes, edges = graph.find('nodes'), graph.find('edges')
+    if nodes.find(".//node[@label]") is not None:
+        node_attr.append('name')
+    if edges.find(".//edge[@label]") is not None:
+        edge_attr.append('name')
+    if edges.find(".//edge[@weight]") is not None:
+        edge_attr.append('weight')
+    node_attr_def = [None for _ in node_attr]
+    edge_attr_def = [None for _ in edge_attr]
+
+    # Handle additional attributes that are defined under 'graph'
     node_attr_id2pos, edge_attr_id2pos = dict(), dict()
-    node_attr_id2def, edge_attr_id2def = dict(), dict()
-    for attrs in graph.findall('attrubutes'):
-        is_node_attr = attrs['class'] == 'node'
+    for attrs in graph.iter('attrubutes'):
+        is_node_attr = (attrs.get('class') == 'node')
         attr_names = node_attr if is_node_attr else edge_attr
         id2pos = node_attr_id2pos if is_node_attr else edge_attr_id2pos
-        id2default = node_attr_id2def if is_node_attr else edge_attr_id2def
+        counter = 1
+        def_vals = node_attr_def if is_node_attr else edge_attr_def
         for attr in attrs.iter('attrubute'):
-            attr_names.append(attr['title'])
-            id2pos[attr.id] = attr.id + 1  # The 1st attr. is 'label' or 'edge'
-            id2default[attr.id] = attr.get('default')
+            attr_names.append(attr.get('title'))
+            id2pos[attr.get('id')] = counter
+            counter += 1
+            def_vals.append(attr.get('default'))
+
+    graphdata.node_attr = node_attr
+    graphdata.edge_attr = edge_attr
+
+    # Obtain the list of nodes and edges, including their attribute values
+    node_has_name = 'name' in node_attr
+    for node in nodes.iter('node'):
+        n_vec = copy(node_attr_def)
+        n_vec[0] = node.get('id')  # Identifier of the node
+        if node_has_name:
+            n_vec[node_attr.index('name')] = node.get('label')
+        for attrval in node.iterfind("./attrvalues/attrvalue"):
+            n_vec[node_attr_id2pos[attrval.get('for')]] = attrval.get('value')
+        graphdata.nodes.append(n_vec)
+
+    edge_has_name, edge_has_weight = 'name' in edge_attr, 'weight' in edge_attr
+    for edge in edges.iter('edge'):
+        e_vec = copy(edge_attr_def)
+        e_vec[0] = (edge.get('source'), edge.get('target'))
+        if edge_has_name:
+            e_vec[edge_attr.index('name')] = edge.get('label')
+        if edge_has_weight:
+            e_vec[edge_attr.index('weight')] = edge.get('weight')
+        for attrval in edge.iterfind("./attrvalues/attrvalue"):
+            e_vec[edge_attr_id2pos[attrval.get('for')]] = attrval.get('value')
+        graphdata.edges.append(e_vec)
+
+    # TODO: graph has an optional attribute 'mode' which specifies if the graph
+    # is static or dynamical (temporal). This is out of the scope of the
+    # project but still worths noting.
 
     return graphdata
